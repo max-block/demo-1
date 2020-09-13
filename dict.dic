@@ -1,0 +1,9 @@
+uvicorn
+apscheduler
+asctime
+levelname
+pysnooper
+tracemalloc
+fastapi
+
+hrequest

@@ -1,0 +1,5 @@
+- name: Copy nginx.yml (docker-compose)
+  template: src=nginx.yml dest=/etc/nginx.yml
+
+- name: Deploy nginx docker stack
+  docker_stack: name=nginx compose=/etc/nginx.yml

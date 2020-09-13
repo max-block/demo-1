@@ -1,0 +1,11 @@
+- include_tasks: host.yml
+  when: playbook_action == "host"
+
+- include_tasks: nginx.yml
+  when: playbook_action == "nginx"
+
+- include_tasks: update.yml
+  when: playbook_action == "update"
+
+- include_tasks: test.yml
+  when: playbook_action == "test"

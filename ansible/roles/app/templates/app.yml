@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+  app:
+    image: {{ app_image }}
+    command: gunicorn -b 0.0.0.0:3000 --timeout 999 --threads 12 -k uvicorn.workers.UvicornWorker app.main:app
+    environment:
+      - APP_NAME={{ app }}
+      - DATABASE_URL=mongodb://root:{{ db_password }}@db/app?authSource=admin
+      - DATABASE_HOST=db
+      - DATA_DIR=/data
+      - DOMAIN={{ domain }}
+      - ACCESS_TOKEN={{ access_token }}
+      - VIRTUAL_HOST={{ domain }}
+      - LETSENCRYPT_HOST={{ domain }}
+      - VIRTUAL_PORT=3000
+    volumes:
+      - app:/data
+    networks:
+      - nginx
+      - default
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+{% if app_extra_ports %}
+    ports:
+{% for p in app_extra_ports %}
+      - {{p}}:{{p}}
+{% endfor %}
+{% endif %}
+
+
+  db:
+    image: mongo:4.4
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD={{ db_password }}
+    volumes:
+      - db:/data/db
+    networks:
+      - default
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+
+volumes:
+  app:
+  db:
+
+networks:
+  default:
+  nginx:
+    external: true

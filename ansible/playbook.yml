@@ -1,0 +1,9 @@
+- hosts: servers
+  vars_prompt:
+    - name: playbook_action
+      prompt: action? host nginx update
+      private: no
+      default: update
+
+  roles:
+    - role: app

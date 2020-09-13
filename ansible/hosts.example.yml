@@ -1,0 +1,14 @@
+servers:
+  hosts:
+    server-1:
+      app: demo-bot
+      domain: demo-bot.example.net
+      app_image: nexus.example.net:5000/repository/docker/demo-bot:latest
+      db_password: secret
+      access_token: secret
+      app_extra_ports: []
+
+  vars:
+      docker_registry: nexus.example.net:5000/repository/docker
+      docker_username: docker-ro
+      docker_password: secret

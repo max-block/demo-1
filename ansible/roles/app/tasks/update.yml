@@ -1,0 +1,14 @@
+- name: Setup /etc/{{ app }}.yml (docker-compose)
+  template: src=app.yml dest=/etc/{{ app }}.yml
+
+- name: Log into private registry
+  docker_login: registry={{ docker_registry }} username={{ docker_username }} password={{ docker_password }}
+
+- name: Pull the app images
+  docker_image: name={{ app_image }} source=pull force_source=yes
+
+- name: Deploy {{ app }} docker stack
+  docker_stack: name={{ app }} compose=/etc/{{ app }}.yml with_registry_auth=yes
+
+- name: Prune docker images
+  docker_prune: images=True
