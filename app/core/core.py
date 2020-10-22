@@ -64,7 +64,7 @@ class Core:
 
     def shutdown(self):
         self.scheduler.stop()
-        self.db.client.close()
+        self.db.close()
         self.log.info("app stopped")
         # noinspection PyUnresolvedReferences,PyProtectedMember
         os._exit(0)
