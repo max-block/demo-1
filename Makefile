@@ -45,5 +45,6 @@ host:
 dev:
 	watchmedo auto-restart --directory=app --recursive --patterns='*.py' uvicorn -- --port 3000 --log-level warning app.main:app
 
+
 gunicorn:
 	gunicorn -b 0.0.0.0:3000 --timeout 999 --threads 12 -k uvicorn.workers.UvicornWorker app.main:app

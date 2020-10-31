@@ -2,9 +2,8 @@ from datetime import datetime
 from enum import Enum, unique
 from typing import Any, Optional
 
+from mb_commons import utc_now
 from pydantic import BaseModel, Field, HttpUrl
-
-from app.core.utils.time import utc_now
 
 
 class ObjectIdStr(str):

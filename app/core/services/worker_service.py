@@ -2,6 +2,7 @@ from logging import Logger
 from typing import Any, Optional
 
 from bson import ObjectId
+from mb_commons import ParallelTasks, hrequest, synchronized_parameter, utc_now
 from pydantic import BaseModel
 from pymongo.collection import ReturnDocument
 from pymongo.results import DeleteResult
@@ -13,9 +14,6 @@ from app.core.models import Data, DataStatus, Worker
 from app.core.services import BaseService
 from app.core.services.bot_service import BotService
 from app.core.services.data_service import DataService
-from app.core.utils.concurrency import ParallelTasks, synchronized_parameter
-from app.core.utils.hrequest import HResponseStatus, hrequest
-from app.core.utils.time import utc_now
 
 
 class CreateWorkerParams(BaseModel):
@@ -98,7 +96,7 @@ class WorkerService(BaseService):
     def stop_worker(self, pk) -> Optional[Worker]:
         return self.update(pk, {"$set": {"started": False}})
 
-    @synchronized_parameter(lock_parameter_index=1)
+    @synchronized_parameter(arg_index=1)
     def work(self, pk):
         self.log.debug("work(%s)", pk)
         worker = self.get(pk)
@@ -108,9 +106,9 @@ class WorkerService(BaseService):
         r = hrequest(worker.source, timeout=self.bot_service.get().timeout)
         worker_updated = {"last_work_at": utc_now()}
         data = {"worker": worker.name}
-        if r.status == HResponseStatus.TIMEOUT:
+        if r.is_timeout_error():
             data["status"] = DataStatus.TIMEOUT
-        elif r.status == HResponseStatus.OK:
+        elif not r.is_error():
             if r.json_parse_error:
                 data["status"] = DataStatus.JSON_ERROR
             else:

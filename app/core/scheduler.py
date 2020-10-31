@@ -5,7 +5,7 @@ from logging import Logger
 from threading import Thread
 from typing import Callable
 
-from app.core.utils.time import utc_now
+from mb_commons import utc_now
 
 
 class Scheduler:
