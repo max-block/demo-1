@@ -1,14 +1,14 @@
 servers:
   hosts:
-    "demo-python-fastapi-pymongo.example.net":
-      app: demo-python-fastapi-pymongo
-      domain: demo-python-fastapi-pymongo.example.net
-      app_image: docker.pkg.github.com/max-block/demo-python-fastapi-pymongo/demo-python-fastapi-pymongo
+    "demo1.example.net":
+      app: demo1
+      domain: demo1.example.net
+      app_image: docker.pkg.github.com/max-block/demo1/demo1
       db_password: secret
       access_token: secret
       app_extra_ports: []
 
   vars:
-      docker_registry: docker.pkg.github.com/max-block/solana-nodes
+      docker_registry: docker.pkg.github.com/max-block/demo1
       docker_username: max-block
       docker_password: secret
