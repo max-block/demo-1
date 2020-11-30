@@ -35,7 +35,7 @@ def init(core: Core) -> APIRouter:
         return core.worker_service.stop_worker(pk)
 
     @router.post("/{pk}/work")
-    def work_worker(pk):
+    def process_worker_work(pk):
         return core.worker_service.work(pk)
 
     return router

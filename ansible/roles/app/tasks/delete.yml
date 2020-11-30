@@ -1,0 +1,9 @@
+- name: Remove {{ app }} docker stack
+  docker_stack: name={{ app }} state=absent
+
+
+- name: Remove {{ app }}_app docker volume
+  docker_volume: name={{ app }}_app state=absent
+
+- name: Remove {{ app }}_db docker volume
+  docker_volume: name={{ app }}_db state=absent
