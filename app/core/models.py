@@ -3,26 +3,8 @@ from enum import Enum, unique
 from typing import Any, Optional
 
 from mb_commons import utc_now
-from pydantic import BaseModel, Field, HttpUrl
-
-
-class ObjectIdStr(str):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        return str(v)
-
-
-class MongoModel(BaseModel):
-    def to_doc(self) -> dict:
-        doc = self.dict()
-        if doc["id"] is not None:
-            doc["_id"] = doc["id"]
-        del doc["id"]
-        return doc
+from mb_commons.mongo import MongoModel, ObjectIdStr
+from pydantic import Field, HttpUrl
 
 
 class Bot(MongoModel):
