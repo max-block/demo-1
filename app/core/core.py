@@ -3,9 +3,10 @@ import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+from mb_commons import Scheduler
+
 from app.config import AppConfig
 from app.core.db import DB
-from app.core.scheduler import Scheduler
 from app.core.services.bot_service import BotService
 from app.core.services.data_service import DataService
 from app.core.services.system_service import SystemService

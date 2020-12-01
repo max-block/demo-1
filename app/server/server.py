@@ -121,6 +121,10 @@ class Server:
             response.delete_cookie(self.api_key_name, domain=self.core.config.DOMAIN)
             return response
 
+        @self.app.get("/")
+        async def redirect_to_api():
+            return RedirectResponse(url="/api")
+
     def _get_api_key(self) -> Callable:
         async def _get_api_key(
             query: str = Server.key_query,
