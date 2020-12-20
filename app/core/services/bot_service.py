@@ -38,15 +38,12 @@ class BotService(BaseService):
     @synchronized
     def _update(self, updated: dict):
         self._bot = self._bot.copy(update=updated)
-        self.db.bot.update_one({"_id": 1}, {"$set": updated})
+        self.db.bot.update_by_id(1, {"$set": updated})
 
     @synchronized
     def _init_bot(self) -> Bot:
-        if not self.db.bot.find_one({"_id": 1}):
+        if not self.db.bot.get_or_none(1):
             bot = Bot()
             bot.id = 1
-            self.db.bot.insert_one(bot.to_doc())
-        res = self.db.bot.find_one({"_id": 1})
-        if res:
-            return Bot(**res)
-        raise Exception("can't get bot from db")
+            self.db.bot.insert_one(bot)
+        return self.db.bot.get(1)

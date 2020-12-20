@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter
+from mb_commons.mongo import make_query
 
 from app.core.core import Core
 from app.core.models import Worker
@@ -10,9 +11,9 @@ from app.core.services.worker_service import CreateWorkerParams
 def init(core: Core) -> APIRouter:
     router = APIRouter()
 
-    @router.get("", response_model=list[Worker])
+    @router.get("", response_model=List[Worker])
     def get_workers(started: Optional[bool] = None, limit: int = 100):
-        return core.worker_service.find(started, limit)
+        return core.db.worker.find(make_query(started=started), "-created_at", limit)
 
     @router.post("", response_model=Worker)
     def create_worker(worker: CreateWorkerParams):
@@ -20,11 +21,11 @@ def init(core: Core) -> APIRouter:
 
     @router.get("/{pk}", response_model=Optional[Worker])
     def get_worker(pk):
-        return core.worker_service.get(pk)
+        return core.db.worker.get_or_none(pk)
 
     @router.delete("/{pk}")
     def delete_worker(pk):
-        return core.worker_service.delete(pk)
+        return core.db.worker.delete_by_id(pk)
 
     @router.post("/{pk}/start")
     def start_worker(pk):

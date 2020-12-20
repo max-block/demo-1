@@ -1,11 +1,8 @@
 from logging import Logger
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
-from bson import ObjectId
 from mb_commons import ParallelTasks, hrequest, synchronized_parameter, utc_now
 from pydantic import BaseModel
-from pymongo.collection import ReturnDocument
-from pymongo.results import DeleteResult
 from wrapt import synchronized
 
 from app.config import AppConfig
@@ -13,7 +10,6 @@ from app.core.db import DB
 from app.core.models import Data, DataStatus, Worker
 from app.core.services import BaseService
 from app.core.services.bot_service import BotService
-from app.core.services.data_service import DataService
 
 
 class CreateWorkerParams(BaseModel):
@@ -23,28 +19,20 @@ class CreateWorkerParams(BaseModel):
 
 
 class WorkerService(BaseService):
-    def __init__(self, config: AppConfig, log: Logger, db: DB, bot_service: BotService, data_service: DataService):
+    def __init__(self, config: AppConfig, log: Logger, db: DB, bot_service: BotService):
         super().__init__(config, log, db)
         self.bot_service = bot_service
-        self.data_service = data_service
 
     @synchronized
     def create(self, worker: CreateWorkerParams) -> Worker:
-        if self.db.worker.count_documents({"name": worker.name}) > 0:
+        if self.db.worker.count({"name": worker.name}) > 0:
             raise ValueError(f"a worker with the name '{worker.name}' exists already")
 
-        new_doc = Worker(**worker.dict()).to_doc()
-        new_id = self.db.worker.insert_one(new_doc).inserted_id
-        return Worker(**self.db.worker.find_one({"_id": new_id}))
+        new_id = self.db.worker.insert_one(Worker(**worker.dict())).inserted_id
+        return self.db.worker.get(new_id)
 
-    def find(self, started: Optional[bool], limit: int) -> list[Worker]:
-        q: dict[str, Any] = {}
-        if started is not None:
-            q["started"] = started
-        return [Worker(**w) for w in self.db.worker.find(q, sort=[("created_at", -1)], limit=limit)]
-
-    def find_for_work(self) -> list[Worker]:
-        workers = self.db.worker.aggregate(
+    def find_for_work(self) -> List[Worker]:
+        workers = self.db.worker.collection.aggregate(
             [
                 {
                     "$match": {
@@ -73,39 +61,22 @@ class WorkerService(BaseService):
         )
         return [Worker(**w) for w in workers]
 
-    def get(self, pk) -> Optional[Worker]:
-        res = self.db.worker.find_one({"_id": ObjectId(pk)})
-        if res:
-            return Worker(**res)
-
-    def delete(self, pk) -> DeleteResult:
-        return self.db.worker.delete_one({"_id": ObjectId(pk)}).raw_result
-
-    def update(self, pk, updated: dict) -> Optional[Worker]:
-        res = self.db.worker.find_one_and_update(
-            {"_id": ObjectId(pk)},
-            updated,
-            return_document=ReturnDocument.AFTER,
-        )
-        if res:
-            return Worker(**res)
-
     def start_worker(self, pk) -> Optional[Worker]:
-        return self.update(pk, {"$set": {"started": True}})
+        return self.db.worker.find_by_id_and_update(pk, {"$set": {"started": True}})
 
     def stop_worker(self, pk) -> Optional[Worker]:
-        return self.update(pk, {"$set": {"started": False}})
+        return self.db.worker.find_by_id_and_update(pk, {"$set": {"started": False}})
 
     @synchronized_parameter(arg_index=1)
     def work(self, pk):
         self.log.debug("work(%s)", pk)
-        worker = self.get(pk)
+        worker = self.db.worker.get_or_none(pk)
         if not worker or not worker.started:
             return False
 
         r = hrequest(worker.source, timeout=self.bot_service.get().timeout)
         worker_updated = {"last_work_at": utc_now()}
-        data = {"worker": worker.name}
+        data: Dict[str, Any] = {"worker": worker.name}
         if r.is_timeout_error():
             data["status"] = DataStatus.TIMEOUT
         elif not r.is_error():
@@ -117,8 +88,8 @@ class WorkerService(BaseService):
         else:
             data["status"] = DataStatus.ERROR
 
-        self.data_service.create(Data(**data))
-        self.update(pk, {"$set": worker_updated})
+        self.db.data.insert_one(Data(**data))
+        self.db.worker.update_by_id(pk, {"$set": worker_updated})
         return True
 
     @synchronized

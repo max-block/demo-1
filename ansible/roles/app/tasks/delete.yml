@@ -1,6 +1,8 @@
 - name: Remove {{ app }} docker stack
   docker_stack: name={{ app }} state=absent
 
+- name: Pause for 15 seconds to stop docker containers
+  pause: seconds=15
 
 - name: Remove {{ app }}_app docker volume
   docker_volume: name={{ app }}_app state=absent
