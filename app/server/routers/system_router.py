@@ -23,18 +23,18 @@ def init(core: Core) -> APIRouter:
         core.system_service.clean_logfile()
         return True
 
-    @router.post("/start_tracemalloc")
+    @router.post("/tracemalloc/start")
     def start_tracemalloc():
         tracemalloc.start()
         return {"message": "tracemalloc was started"}
 
-    @router.post("/stop_tracemalloc")
+    @router.post("/tracemalloc/stop")
     def stop_tracemalloc():
         tracemalloc.stop()
         return {"message": "tracemalloc was stopped"}
 
-    @router.get("/tracemalloc_snapshot", response_class=PlainTextResponse)
-    def tracemalloc_snapshot():
+    @router.get("/tracemalloc/snapshot", response_class=PlainTextResponse)
+    def snapshot_tracemalloc():
         return core.system_service.tracemalloc_snapshot()
 
     @router.get("/test")

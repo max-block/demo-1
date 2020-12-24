@@ -18,7 +18,7 @@ class Core:
         self.log = logging.getLogger("app")
         self.init_logger()
 
-        self.db = DB(config.DATABASE_URL)
+        self.db: DB = DB(config.DATABASE_URL)
         self.bot_service: BotService = BotService(config, self.log, self.db)
         self.system_service: SystemService = SystemService(config, self.log, self.db)
         self.worker_service: WorkerService = WorkerService(config, self.log, self.db, self.bot_service)
