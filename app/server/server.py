@@ -12,7 +12,7 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 from app.core.core import Core
 from app.core.errors import UserError
-from app.server.routers import bot_router, data_router, system_router, worker_router
+from app.server.routers import data_router, system_router, worker_router
 
 
 class Server:
@@ -39,12 +39,6 @@ class Server:
         return self.app
 
     def _configure_routers(self):
-        self.app.include_router(
-            bot_router.init(self.core),
-            prefix="/api/bot",
-            dependencies=[Depends(self._get_api_key())],
-            tags=["bot"],
-        )
         self.app.include_router(
             worker_router.init(self.core),
             prefix="/api/workers",

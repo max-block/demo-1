@@ -7,7 +7,6 @@ from mb_commons import Scheduler
 
 from app.config import AppConfig
 from app.core.db import DB
-from app.core.services.bot_service import BotService
 from app.core.services.system_service import SystemService
 from app.core.services.worker_service import WorkerService
 
@@ -19,9 +18,8 @@ class Core:
         self.init_logger()
 
         self.db: DB = DB(config.DATABASE_URL)
-        self.bot_service: BotService = BotService(config, self.log, self.db)
         self.system_service: SystemService = SystemService(config, self.log, self.db)
-        self.worker_service: WorkerService = WorkerService(config, self.log, self.db, self.bot_service)
+        self.worker_service: WorkerService = WorkerService(config, self.log, self.db, self.system_service)
         self.scheduler = self.init_scheduler()
         self.startup()
         self.log.info("app started")

@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, unique
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from mb_commons import utc_now
 from mb_commons.mongo import MongoModel, ObjectIdStr
@@ -12,6 +12,10 @@ class Bot(MongoModel):
     timeout: int = 10  # in seconds
     worker_limit: int = 15  # how many workers can work at once
     bot_started: bool = False
+    telegram_token: str = ""
+    telegram_polling: bool = False
+    telegram_admins: List[int] = []
+    telegram_chat_id: int = 0
 
 
 class Worker(MongoModel):

@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from starlette.responses import PlainTextResponse
 
 from app.core.core import Core
+from app.core.services.system_service import UpdateBotParams
 
 
 def init(core: Core) -> APIRouter:
@@ -13,6 +14,22 @@ def init(core: Core) -> APIRouter:
     @router.get("")
     def system_stats():
         return core.system_service.get_stats()
+
+    @router.get("/bot")
+    def get_bot():
+        return core.system_service.get_bot()
+
+    @router.put("/bot")
+    def update_bot(params: UpdateBotParams):
+        return core.system_service.update_bot(params)
+
+    @router.post("/bot/start")
+    def start_bot():
+        return core.system_service.start_bot()
+
+    @router.post("/stop")
+    def stop_bot():
+        return core.system_service.stop_bot()
 
     @router.get("/log", response_class=PlainTextResponse)
     def view_logfile():

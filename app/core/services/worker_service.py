@@ -9,7 +9,7 @@ from app.config import AppConfig
 from app.core.db import DB
 from app.core.models import Data, DataStatus, Worker
 from app.core.services import BaseService
-from app.core.services.bot_service import BotService
+from app.core.services.system_service import SystemService
 
 
 class CreateWorkerParams(BaseModel):
@@ -19,9 +19,9 @@ class CreateWorkerParams(BaseModel):
 
 
 class WorkerService(BaseService):
-    def __init__(self, config: AppConfig, log: Logger, db: DB, bot_service: BotService):
+    def __init__(self, config: AppConfig, log: Logger, db: DB, system_service: SystemService):
         super().__init__(config, log, db)
-        self.bot_service = bot_service
+        self.system_service = system_service
 
     @synchronized
     def create(self, worker: CreateWorkerParams) -> Worker:
@@ -56,7 +56,7 @@ class WorkerService(BaseService):
                     },
                 },
                 {"$sort": {"last_work_at": 1}},
-                {"$limit": self.bot_service.get().worker_limit},
+                {"$limit": self.system_service.get_bot().worker_limit},
             ],
         )
         return [Worker(**w) for w in workers]
@@ -74,7 +74,7 @@ class WorkerService(BaseService):
         if not worker or not worker.started:
             return False
 
-        r = hrequest(worker.source, timeout=self.bot_service.get().timeout)
+        r = hrequest(worker.source, timeout=self.system_service.get_bot().timeout)
         worker_updated = {"last_work_at": utc_now()}
         data: Dict[str, Any] = {"worker": worker.name}
         if r.is_timeout_error():
@@ -99,7 +99,7 @@ class WorkerService(BaseService):
         if not workers:
             return
 
-        tasks = ParallelTasks(max_workers=self.bot_service.get().worker_limit)
+        tasks = ParallelTasks(max_workers=self.system_service.get_bot().worker_limit)
         for w in workers:
             tasks.add_task(f"work_{w.name}", self.work, args=(w.id,))
         tasks.execute()

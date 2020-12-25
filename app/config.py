@@ -13,7 +13,6 @@ class AppConfig(BaseSettings):
     VERSION: str = __version__
 
     TAGS_METADATA = [
-        {"name": "bot"},
         {"name": "workers"},
         {"name": "data"},
         {"name": "system"},
