@@ -1,4 +1,4 @@
-# demo1
+# demo-fastapi
 
 It's a demo app which is written in Python.
 

@@ -22,10 +22,7 @@ class SystemService(BaseService):
         self.log.info("logfile was cleaned")
 
     def get_stats(self):
-        db_stats = {}
-        for col in self.db.get_collection_names():
-            db_stats[col] = self.db.get_collection(col).count_documents({})
-        return {"db": db_stats, "threads": len(threading.enumerate())}
+        return {"db": self.db.get_stats(), "threads": len(threading.enumerate())}
 
     @staticmethod
     def tracemalloc_snapshot(key_type="lineno", limit=30) -> str:

@@ -1,14 +1,14 @@
 servers:
   hosts:
-    "demo1.example.net":
-      app: demo1
-      domain: demo1.example.net
-      app_image: docker.pkg.github.com/max-block/demo1/demo1
+    "demo-fastapi.example.net":
+      app: demo-fastapi
+      domain: demo-fastapi.example.net
+      app_image: docker.pkg.github.com/max-block/demo-fastapi/demo-fastapi
       db_password: secret
       access_token: secret
       app_extra_ports: []
 
   vars:
-      docker_registry: docker.pkg.github.com/max-block/demo1
+      docker_registry: docker.pkg.github.com/max-block/demo-fastapi
       docker_username: max-block
       docker_password: secret

@@ -1,8 +1,5 @@
-from typing import List
-
 from mb_commons.mongo import MongoCollection, MongoConnection
 from pymongo import IndexModel
-from pymongo.collection import Collection
 
 from app.core.models import Bot, Data, Worker
 
@@ -33,8 +30,8 @@ class DB:
     def close(self):
         self._client.close()
 
-    def get_collection_names(self) -> List[str]:
-        return self._database.list_collection_names()
-
-    def get_collection(self, name: str) -> Collection:
-        return self._database[name]
+    def get_stats(self):
+        db_stats = {}
+        for col in self._database.list_collection_names():
+            db_stats[col] = self._database[col].count_documents({})
+        return db_stats
