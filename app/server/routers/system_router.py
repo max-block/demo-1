@@ -1,4 +1,3 @@
-import time
 import tracemalloc
 
 from fastapi import APIRouter
@@ -54,9 +53,11 @@ def init(core: Core) -> APIRouter:
     def snapshot_tracemalloc():
         return core.system_service.tracemalloc_snapshot()
 
-    @router.get("/test")
-    def test():
-        time.sleep(10)
-        return 777
+    from typing import Optional
+
+    @router.post("/test-telegram-message")
+    def test_telegram_message(large: Optional[bool] = None):
+        message = "bla bla bla" * 1000 if large else "bla bla bla"
+        return core.system_service.send_telegram_message(message)
 
     return router

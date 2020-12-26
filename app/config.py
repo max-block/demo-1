@@ -16,6 +16,7 @@ class AppConfig(BaseSettings):
         {"name": "workers"},
         {"name": "data"},
         {"name": "system"},
+        {"name": "telegram"},
         {"name": "auth"},
     ]
 

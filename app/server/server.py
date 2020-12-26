@@ -12,7 +12,8 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 from app.core.core import Core
 from app.core.errors import UserError
-from app.server.routers import data_router, system_router, worker_router
+from app.server.routers import data_router, system_router, telegram_router, worker_router
+from app.telegram import Telegram
 
 
 class Server:
@@ -22,8 +23,9 @@ class Server:
     key_header = Security(APIKeyHeader(name=api_key_name, auto_error=False))
     key_cookie = Security(APIKeyCookie(name=api_key_name, auto_error=False))
 
-    def __init__(self, core: Core):
+    def __init__(self, core: Core, telegram: Telegram):
         self.core = core
+        self.telegram = telegram
         self.app = FastAPI(
             title=core.config.APP_NAME,
             docs_url=None,
@@ -34,6 +36,7 @@ class Server:
         self._configure_app()
         self._configure_openapi()
         self._configure_routers()
+        telegram.start()
 
     def get_app(self) -> FastAPI:
         return self.app
@@ -56,6 +59,12 @@ class Server:
             prefix="/api/system",
             dependencies=[Depends(self._get_api_key())],
             tags=["system"],
+        )
+        self.app.include_router(
+            telegram_router.init(self.telegram),
+            prefix="/api/telegram",
+            dependencies=[Depends(self._get_api_key())],
+            tags=["telegram"],
         )
 
     def _configure_app(self):
@@ -80,6 +89,7 @@ class Server:
 
         @self.app.on_event("shutdown")
         def shutdown_server():
+            self.telegram.stop()
             self.core.shutdown()
 
     def _configure_openapi(self):

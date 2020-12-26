@@ -1,8 +1,11 @@
 import threading
 import tracemalloc
 from logging import Logger
+from typing import List
 
 from pydantic import BaseModel
+from telebot import TeleBot
+from telebot.util import split_string
 from wrapt import synchronized
 
 from app.config import AppConfig
@@ -12,6 +15,11 @@ from app.core.services import BaseService
 
 
 class UpdateBotParams(BaseModel):
+    telegram_token: str
+    telegram_polling: bool
+    telegram_channel: bool
+    telegram_channel_id: int
+    telegram_admins: List[int]
     timeout: int
     worker_limit: int
 
@@ -70,3 +78,20 @@ class SystemService(BaseService):
         for stat in snapshot.statistics(key_type)[:limit]:
             result += str(stat) + "\n"
         return result
+
+    def send_telegram_message(self, message: str):
+        """Send a telegram message to the project channel """
+        bot = self.get_bot()
+        if bot.telegram_token and bot.telegram_channel and bot.telegram_channel_id:
+            threading.Thread(target=self._send_telegram_message, args=(message,)).start()
+
+    @synchronized
+    def _send_telegram_message(self, message: str):
+        try:
+            bot = TeleBot(self.get_bot().telegram_token)
+            chat_id = self.get_bot().telegram_channel_id
+            for text in split_string(message, 4096):
+                bot.send_message(chat_id, text)
+        except Exception as e:
+            self.log.error(f"send_telegram_message: {str(e)}")
+            return str(e)

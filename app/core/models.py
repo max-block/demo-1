@@ -13,9 +13,10 @@ class Bot(MongoModel):
     worker_limit: int = 15  # how many workers can work at once
     bot_started: bool = False
     telegram_token: str = ""
-    telegram_polling: bool = False
+    telegram_polling: bool = False  # Telegram commands will work
+    telegram_channel: bool = False  # system_service.send_telegram_message will work
+    telegram_channel_id: int = 0
     telegram_admins: List[int] = []
-    telegram_chat_id: int = 0
 
 
 class Worker(MongoModel):
