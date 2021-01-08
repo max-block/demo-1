@@ -5,6 +5,7 @@ from typing import List, Optional
 from telebot import TeleBot
 from telebot.types import Message
 from telebot.util import split_string
+from wrapt import synchronized
 
 from app.core.core import Core
 
@@ -32,6 +33,7 @@ class Telegram:
         self.bot: Optional[TeleBot] = None
         self.is_started = False
 
+    @synchronized
     def start(self):
         """
         Telegram bot can be started only if these bot settings are set:
@@ -55,9 +57,11 @@ class Telegram:
             self.is_started = False
             self.core.log.error(f"telegram polling: {str(e)}")
 
+    @synchronized
     def stop(self):
         self.is_started = False
-        self.bot.stop_bot()
+        if self.bot:
+            self.bot.stop_bot()
         self.core.log.debug("telegram stopped")
 
     def _init_commands(self):

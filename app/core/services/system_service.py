@@ -1,48 +1,36 @@
 import threading
 import tracemalloc
 from logging import Logger
-from typing import List
 
-from pydantic import BaseModel
 from telebot import TeleBot
 from telebot.util import split_string
 from wrapt import synchronized
 
 from app.config import AppConfig
 from app.core.db import DB
-from app.core.models import Bot
+from app.core.models import BotInDB, BotUpdate
 from app.core.services import BaseService
-
-
-class UpdateBotParams(BaseModel):
-    telegram_token: str
-    telegram_polling: bool
-    telegram_channel: bool
-    telegram_channel_id: int
-    telegram_admins: List[int]
-    timeout: int
-    worker_limit: int
 
 
 class SystemService(BaseService):
     def __init__(self, config: AppConfig, log: Logger, db: DB):
         super().__init__(config, log, db)
         self.logfile = self.config.DATA_DIR + "/app.log"
-        self._bot: Bot = self._init_bot()
+        self._bot: BotInDB = self._init_bot()
 
     @synchronized
-    def update_bot(self, params: UpdateBotParams) -> Bot:
+    def update_bot(self, params: BotUpdate) -> BotInDB:
         self._update_bot(params.dict())
         return self.get_bot()
 
-    def get_bot(self) -> Bot:
+    def get_bot(self) -> BotInDB:
         return self._bot.copy()
 
-    def start_bot(self) -> Bot:
+    def start_bot(self) -> BotInDB:
         self._update_bot({"bot_started": True})
         return self.get_bot()
 
-    def stop_bot(self) -> Bot:
+    def stop_bot(self) -> BotInDB:
         self._update_bot({"bot_started": False})
         return self.get_bot()
 
@@ -52,9 +40,9 @@ class SystemService(BaseService):
         self.db.bot.update_by_id(1, {"$set": updated})
 
     @synchronized
-    def _init_bot(self) -> Bot:
+    def _init_bot(self) -> BotInDB:
         if not self.db.bot.get_or_none(1):
-            bot = Bot()
+            bot = BotInDB()
             bot.id = 1
             self.db.bot.insert_one(bot)
         return self.db.bot.get(1)

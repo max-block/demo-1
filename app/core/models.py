@@ -4,10 +4,11 @@ from typing import Any, List, Optional
 
 from mb_commons import utc_now
 from mb_commons.mongo import MongoModel, ObjectIdStr
-from pydantic import Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 
-class Bot(MongoModel):
+# Bot
+class BotInDB(MongoModel):
     id: Optional[int] = Field(None, alias="_id")
     timeout: int = 10  # in seconds
     worker_limit: int = 15  # how many workers can work at once
@@ -19,7 +20,18 @@ class Bot(MongoModel):
     telegram_admins: List[int] = []
 
 
-class Worker(MongoModel):
+class BotUpdate(BaseModel):
+    telegram_token: str
+    telegram_polling: bool
+    telegram_channel: bool
+    telegram_channel_id: int
+    telegram_admins: List[int]
+    timeout: int
+    worker_limit: int
+
+
+# Worker
+class WorkerInDB(MongoModel):
     id: Optional[ObjectIdStr] = Field(None, alias="_id")
     name: str
     source: HttpUrl
@@ -29,16 +41,23 @@ class Worker(MongoModel):
     created_at: datetime = Field(default_factory=utc_now)
 
 
+class WorkerCreate(BaseModel):
+    name: str
+    source: HttpUrl
+    interval: int
+
+
+# Data
 @unique
 class DataStatus(str, Enum):
-    OK = "OK"
-    TIMEOUT = "TIMEOUT"
-    PROXY_ERROR = "PROXY_ERROR"
-    JSON_ERROR = "JSON_ERROR"
-    ERROR = "ERROR"
+    ok = "ok"
+    timeout = "timeout"
+    proxy_error = "proxy_error"
+    json_error = "json_error"
+    error = "error"
 
 
-class Data(MongoModel):
+class DataInDB(MongoModel):
     id: Optional[ObjectIdStr] = Field(None, alias="_id")
     worker: str
     status: DataStatus

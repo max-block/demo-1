@@ -4,22 +4,21 @@ from fastapi import APIRouter
 from mb_commons.mongo import make_query
 
 from app.core.core import Core
-from app.core.models import Worker
-from app.core.services.worker_service import CreateWorkerParams
+from app.core.models import WorkerCreate, WorkerInDB
 
 
 def init(core: Core) -> APIRouter:
     router = APIRouter()
 
-    @router.get("", response_model=List[Worker])
+    @router.get("", response_model=List[WorkerInDB])
     def get_workers(started: Optional[bool] = None, limit: int = 100):
         return core.db.worker.find(make_query(started=started), "-created_at", limit)
 
-    @router.post("", response_model=Worker)
-    def create_worker(worker: CreateWorkerParams):
+    @router.post("", response_model=WorkerInDB)
+    def create_worker(worker: WorkerCreate):
         return core.worker_service.create(worker)
 
-    @router.get("/{pk}", response_model=Optional[Worker])
+    @router.get("/{pk}", response_model=Optional[WorkerInDB])
     def get_worker(pk):
         return core.db.worker.get_or_none(pk)
 

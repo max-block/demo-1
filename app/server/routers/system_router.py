@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from starlette.responses import PlainTextResponse
 
 from app.core.core import Core
-from app.core.services.system_service import UpdateBotParams
+from app.core.models import BotUpdate
 
 
 def init(core: Core) -> APIRouter:
@@ -19,7 +19,7 @@ def init(core: Core) -> APIRouter:
         return core.system_service.get_bot()
 
     @router.put("/bot")
-    def update_bot(params: UpdateBotParams):
+    def update_bot(params: BotUpdate):
         return core.system_service.update_bot(params)
 
     @router.post("/bot/start")
