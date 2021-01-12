@@ -1,2 +1,2 @@
-recursive-include app *.py
+recursive-include app *.py *.js *.css *.ico *.j2
 include requirements*.txt

@@ -1,6 +1,7 @@
 fastapi==0.63.0
 Jinja2==2.11.2
 aiofiles==0.6.0
+WTForms==2.3.3
 uvicorn[standard]==0.13.3
 gunicorn==20.0.4
 python-dotenv==0.15.0
