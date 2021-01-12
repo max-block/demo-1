@@ -6,8 +6,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="{{ url_for('static', path='bootstrap.min.css') }}" rel="stylesheet">
-  <link rel="shortcut icon" href="{{ url_for("static", path="favicon.ico") }}">
+  <link href="/static/bootstrap.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="/static/favicon.ico">
   <title>{{ config.app_name }}</title>
 </head>
 <body class="container-fluid">
@@ -38,6 +38,6 @@
   v{{ config.version }} / {{ now() | dt }}
 </footer>
 
-<script src="{{ url_for('static', path='bootstrap.bundle.min.js') }}"></script>
+<script src="/static/bootstrap.bundle.min.js"></script>
 </body>
 </html>
