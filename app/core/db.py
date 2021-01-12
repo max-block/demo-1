@@ -1,7 +1,7 @@
 from mb_commons.mongo import MongoCollection, MongoConnection
 from pymongo import IndexModel
 
-from app.core.models import BotInDB, DataInDB, WorkerInDB
+from app.core.models import Bot, Data, Worker
 
 
 class DB:
@@ -9,15 +9,15 @@ class DB:
         conn = MongoConnection.connect(db_url)
         self._client = conn.client
         self._database = conn.database
-        self.bot: MongoCollection[BotInDB] = MongoCollection(BotInDB, conn.database, "bot")
-        self.worker: MongoCollection[WorkerInDB] = MongoCollection(
-            WorkerInDB,
+        self.bot: MongoCollection[Bot] = MongoCollection(Bot, conn.database, "bot")
+        self.worker: MongoCollection[Worker] = MongoCollection(
+            Worker,
             conn.database,
             "worker",
             [IndexModel("name", unique=True), IndexModel("created_at")],
         )
-        self.data: MongoCollection[DataInDB] = MongoCollection(
-            DataInDB,
+        self.data: MongoCollection[Data] = MongoCollection(
+            Data,
             conn.database,
             "data",
             [

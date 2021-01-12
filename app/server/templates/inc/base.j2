@@ -1,0 +1,43 @@
+{% from "inc/macros/inline_form.j2" import inline_form with context %}
+{% from "inc/macros/button_form.j2" import button_form with context %}
+{% from "inc/macros/dropdown.j2" import dropdown with context %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{{ url_for('static', path='bootstrap.min.css') }}" rel="stylesheet">
+  <link rel="shortcut icon" href="{{ url_for("static", path="favicon.ico") }}">
+  <title>{{ config.app_name }}</title>
+</head>
+<body class="container-fluid">
+
+<header>
+  <div class="d-flex mt-2 align-items-center">
+    <h3>{{ config.app_name }}</h3>
+    <div class="ms-5">
+      {% for path,title in config.main_menu.items() %}
+        <a href="{{ path }}" class="me-3">{{ title }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <hr>
+  <br>
+</header>
+
+
+<main>
+  {% block content -%}
+  {%- endblock %}
+</main>
+
+
+<footer>
+  <br>
+  <hr>
+  v{{ config.version }} / {{ now() | dt }}
+</footer>
+
+<script src="{{ url_for('static', path='bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

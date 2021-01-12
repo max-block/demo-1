@@ -1,0 +1,31 @@
+{% extends "inc/base.j2" %}
+{% block content %}
+  <h3>workers</h3><br>
+
+  {{ inline_form(form, submit="filter") }}<br>
+
+  <table class="table table-sm">
+    <tr>
+      <th>name</th>
+      <th>created_at</th>
+      <th>started</th>
+      <th>source</th>
+      <th>interval</th>
+      <th>actions</th>
+    </tr>
+    {% for w in workers %}
+      <tr>
+        <td>{{ w.name }}</td>
+        <td>{{ w.created_at | dt }}</td>
+        <td>{{ w.started | yes_no }}</td>
+        <td>{{ w.source }}</td>
+        <td>{{ w.interval }}</td>
+        <td>{{ dropdown([
+        ("/api/workers/"+w.id+"/start", "start", "post"),
+        ("/api/workers/"+w.id+"/stop", "stop", "post"),
+        ("/api/workers/"+ w.id, "view")
+        ]) }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

@@ -17,7 +17,7 @@ class Core:
         self.log = logging.getLogger("app")
         self.init_logger()
 
-        self.db: DB = DB(config.DATABASE_URL)
+        self.db: DB = DB(config.database_url)
         self.system_service: SystemService = SystemService(config, self.log, self.db)
         self.worker_service: WorkerService = WorkerService(config, self.log, self.db, self.system_service)
         self.scheduler = self.init_scheduler()
@@ -33,9 +33,9 @@ class Core:
         return scheduler
 
     def init_logger(self):
-        Path(self.config.DATA_DIR).mkdir(exist_ok=True)
+        Path(self.config.data_dir).mkdir(exist_ok=True)
 
-        self.log.setLevel(logging.DEBUG if self.config.DEBUG else logging.INFO)
+        self.log.setLevel(logging.DEBUG if self.config.debug else logging.INFO)
         self.log.propagate = False
 
         fmt = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
@@ -45,7 +45,7 @@ class Core:
         console_handler.setFormatter(fmt)
         self.log.addHandler(console_handler)
 
-        file_handler = RotatingFileHandler(f"{self.config.DATA_DIR}/app.log", maxBytes=10 * 1024 * 1024, backupCount=1)
+        file_handler = RotatingFileHandler(f"{self.config.data_dir}/app.log", maxBytes=10 * 1024 * 1024, backupCount=1)
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(fmt)
         self.log.addHandler(file_handler)

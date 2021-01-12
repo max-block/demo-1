@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, HttpUrl
 
 
 # Bot
-class BotInDB(MongoModel):
+class Bot(MongoModel):
     id: Optional[int] = Field(None, alias="_id")
     timeout: int = 10  # in seconds
     worker_limit: int = 15  # how many workers can work at once
@@ -31,7 +31,7 @@ class BotUpdate(BaseModel):
 
 
 # Worker
-class WorkerInDB(MongoModel):
+class Worker(MongoModel):
     id: Optional[ObjectIdStr] = Field(None, alias="_id")
     name: str
     source: HttpUrl
@@ -57,7 +57,7 @@ class DataStatus(str, Enum):
     error = "error"
 
 
-class DataInDB(MongoModel):
+class Data(MongoModel):
     id: Optional[ObjectIdStr] = Field(None, alias="_id")
     worker: str
     status: DataStatus

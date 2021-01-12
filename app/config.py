@@ -4,21 +4,23 @@ from app import __version__
 
 
 class AppConfig(BaseSettings):
-    APP_NAME: str
-    DATA_DIR: str
-    ACCESS_TOKEN: str
-    DOMAIN: str
-    DATABASE_URL: str
-    DEBUG: bool = False
-    VERSION: str = __version__
+    app_name: str
+    data_dir: str
+    access_token: str
+    domain: str
+    database_url: str
+    debug: bool = False
+    version: str = __version__
 
-    TAGS_METADATA = [
+    tags_metadata = [
         {"name": "workers"},
         {"name": "data"},
         {"name": "system"},
         {"name": "telegram"},
         {"name": "auth"},
     ]
+
+    main_menu = {"/ui/workers": "workers", "/ui/data": "data"}
 
     class Config:
         env_file = ".env"

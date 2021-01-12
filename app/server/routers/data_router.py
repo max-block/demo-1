@@ -11,7 +11,11 @@ def init(core: Core) -> APIRouter:
     router = APIRouter()
 
     @router.get("")
-    def data_data(worker: Optional[str] = None, status: Optional[DataStatus] = None, limit: int = 100):
+    def get_data_list(worker: Optional[str] = None, status: Optional[DataStatus] = None, limit: int = 100):
         return core.db.data.find(make_query(worker=worker, status=status), "-created_at", limit)
+
+    @router.get("/{pk}")
+    def get_data(pk):
+        return core.db.data.get_or_none(pk)
 
     return router

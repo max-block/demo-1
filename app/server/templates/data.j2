@@ -1,0 +1,23 @@
+{% extends "inc/base.j2" %}
+{% block content %}
+  <h3>data</h3><br>
+
+  {{ inline_form(form, submit="filter") }}<br>
+
+  <table class="table table-sm">
+    <tr>
+      <th>created_at</th>
+      <th>worker</th>
+      <th>status</th>
+      <th>view</th>
+    </tr>
+    {% for d in data %}
+      <tr>
+        <td>{{ d.created_at | dt }}</td>
+        <td>{{ d.worker }}</td>
+        <td>{{ d.status.value }}</td>
+        <td><a href="/api/data/{{ d.id }}">view</a></td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

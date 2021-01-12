@@ -1,0 +1,5 @@
+{% macro button_form(label, action="#") %}
+  <form method="post" action="{{ action }}">
+    <button class="btn btn-link">{{ label }}</button>
+  </form>
+{% endmacro %}

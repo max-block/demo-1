@@ -1,0 +1,26 @@
+{% macro dropdown(links, title="") %}
+  <div class="dropdown">
+    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+      {% if title %}{{ title }}
+      {% else %}☰
+      {% endif %}
+    </button>
+    <div class="dropdown-menu">
+      {% for link in links %}
+        {% if link | length > 2 %}
+          {% if link[2]=="confirm" %}
+            <a class="dropdown-item" href="{{ link[0] }}" onclick='return confirm("sure?")'>{{ link[1] }}</a>
+          {% elif link[2]=="post" %}
+            <form method="post" action="{{ link[0] }}">
+              <button class="btn">{{ link[1] }}</button>
+            </form>
+          {% else %}
+            {{ raise("dropdown: unknown parameter: "+link[2]) }}
+          {% endif %}
+        {% else %}
+          <a class="dropdown-item" href="{{ link[0] }}">{{ link[1] }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endmacro %}
