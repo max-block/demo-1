@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from functools import partial
 from pathlib import Path
 from typing import List, Optional, Type, Union
 
@@ -64,6 +65,16 @@ def raise_(msg):
     raise Exception(msg)
 
 
+def header_info(core: Core):
+    info = f"bot: {yes_no(core.system_service.get_bot().bot_started, on_off=True)}"
+    return Markup(info)
+
+
+def footer_info(core: Core):
+    info = f"workers: {core.db.worker.count({})}"
+    return Markup(info)
+
+
 def configure_jinja(core: Core) -> Jinja2Templates:
     current_dir = Path(__file__).parent.absolute()
     templates = Jinja2Templates(directory=current_dir.joinpath("templates"))
@@ -76,6 +87,8 @@ def configure_jinja(core: Core) -> Jinja2Templates:
     templates.env.globals["config"] = core.config
     templates.env.globals["now"] = datetime.utcnow
     templates.env.globals["raise"] = raise_
+    templates.env.globals["header_info"] = partial(header_info, core)
+    templates.env.globals["footer_info"] = partial(footer_info, core)
     templates.env.globals["confirm"] = """ onclick="return confirm('sure?')" """
 
     return templates

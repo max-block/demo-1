@@ -21,6 +21,7 @@
         <a href="{{ path }}" class="me-3">{{ title }}</a>
       {% endfor %}
     </div>
+    <div class="ms-3">{{ header_info() }}</div>
   </div>
   <hr>
   <br>
@@ -37,6 +38,7 @@
   <br>
   <hr>
   v{{ config.version }} / {{ now() | dt }}
+  <span class="ms-3">{{ footer_info() }}</span>
 </footer>
 
 <script src="/static/bootstrap.bundle.min.js"></script>
