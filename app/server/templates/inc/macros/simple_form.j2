@@ -1,0 +1,43 @@
+{% macro simple_form(form, action="#", method="post", submit="submit") %}
+  <form method="{{ method }}" action="{{ action }}">
+
+    {% for field in form %}
+      {% if field.type == "BooleanField" %}
+        <div class="form-check mb-1">
+            <input class="form-check-input" type="checkbox" value="">
+            <label class="form-check-label">check me</label>
+        </div>
+      {% elif field.type == "SelectField" %}
+        <select class="form-select mb-1">
+            <option>select me...</option>
+            <option>value1</option>
+            <option>value2</option>
+        </select>
+      {% else %}
+        {{ field(class_="form-control mb-1", placeholder=field.render_kw.placeholder or field.name) }}
+      {% endif %}
+{#      <div class="col-12">#}
+{#        <div class="input-group">#}
+{#          {{ field(class_=input_class, placeholder=field.render_kw.placeholder or field.name) }}#}
+{#          {% if field.type == "BooleanField" %}#}
+{#            &nbsp;{{ field.render_kw.placeholder or field.name }}&nbsp;#}
+{#          {% endif %}#}
+{#        </div>#}
+{#      </div>#}
+    {% endfor %}
+
+
+    <button class="btn btn-link" type="submit">{{ submit }}</button>
+
+
+  </form>
+  {% if form.errors %}
+    <ul>
+      {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+        {% for error in field_errors %}
+          <li style="color: red">{{ form[field_name].name }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}

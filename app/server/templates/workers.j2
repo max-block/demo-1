@@ -1,6 +1,10 @@
 {% extends "inc/base.j2" %}
 {% block content %}
-  <h3>workers</h3><br>
+
+  <div class="d-flex align-items-center">
+    <h3>workers</h3>
+    <a href="/ui/create-worker" class="ms-5">create</a>
+  </div><br>
 
   {{ inline_form(form, submit="filter") }}<br>
 
