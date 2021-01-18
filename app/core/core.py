@@ -55,7 +55,6 @@ class Core:
 
     def shutdown(self):
         self.scheduler.stop()
-        self.system_service.stop_bot()
         self.db.close()
         self.log.info("app stopped")
         # noinspection PyUnresolvedReferences,PyProtectedMember

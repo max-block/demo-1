@@ -140,7 +140,7 @@ class Server:
 
         @self.app.get("/")
         async def redirect_to_api():
-            return RedirectResponse(url="/api")
+            return RedirectResponse(url="/ui")
 
     def _get_api_key(self) -> Callable:
         async def _get_api_key(

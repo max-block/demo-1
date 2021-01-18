@@ -8,7 +8,7 @@ from wrapt import synchronized
 
 from app.config import AppConfig
 from app.core.db import DB
-from app.core.models import Bot, BotUpdate
+from app.core.models import Bot
 from app.core.services import BaseService
 
 
@@ -18,24 +18,19 @@ class SystemService(BaseService):
         self.logfile = self.config.data_dir + "/app.log"
         self._bot: Bot = self._init_bot()
 
-    @synchronized
-    def update_bot(self, params: BotUpdate) -> Bot:
-        self._update_bot(params.dict())
-        return self.get_bot()
-
     def get_bot(self) -> Bot:
         return self._bot.copy()
 
     def start_bot(self) -> Bot:
-        self._update_bot({"bot_started": True})
+        self.update_bot({"bot_started": True})
         return self.get_bot()
 
     def stop_bot(self) -> Bot:
-        self._update_bot({"bot_started": False})
+        self.update_bot({"bot_started": False})
         return self.get_bot()
 
     @synchronized
-    def _update_bot(self, updated: dict):
+    def update_bot(self, updated: dict):
         self._bot = self._bot.copy(update=updated)
         self.db.bot.update_by_id(1, {"$set": updated})
 

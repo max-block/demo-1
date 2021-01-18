@@ -20,13 +20,13 @@ def init(core: Core) -> APIRouter:
 
     @router.put("/bot")
     def update_bot(params: BotUpdate):
-        return core.system_service.update_bot(params)
+        return core.system_service.update_bot(params.dict())
 
     @router.post("/bot/start")
     def start_bot():
         return core.system_service.start_bot()
 
-    @router.post("/stop")
+    @router.post("/bot/stop")
     def stop_bot():
         return core.system_service.stop_bot()
 
